@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Task
 from app.database import engine, Base, get_db
 import app.api as api
-from app.schemas import TaskCreate
+from app.schemas import TaskCreate, TaskUpdate
 from fastapi import HTTPException
 import os
 app = FastAPI()
@@ -31,8 +31,8 @@ async def read_task(task_id: int, db: AsyncSession = Depends(get_db)):
     return task
 
 @app.put("/tasks/{task_id}")
-async def update_task(task_id: int, db: AsyncSession = Depends(get_db)):
-    task = await api.update_task(db, task_id)
+async def update_task(task_id: int, task: TaskUpdate, db: AsyncSession = Depends(get_db)):
+    task = await api.update_task(db, task_id, task)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return task

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import enum
 from datetime import datetime
+from typing import Optional
 
 class Priority(enum.IntEnum):
     HIGH = 1
@@ -9,10 +10,17 @@ class Priority(enum.IntEnum):
 
 class TaskCreate(BaseModel):
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     priority: Priority
     due_date: datetime
-    completed: bool | None = None
+    completed: Optional[bool] = False
+
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    priority: Optional[Priority] = None
+    due_date: Optional[datetime] = None
+    completed: Optional[bool] = None 
 
 class TaskRead(TaskCreate):
     id: int
