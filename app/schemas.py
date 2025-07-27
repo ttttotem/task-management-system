@@ -26,6 +26,7 @@ class TaskFilter(BaseModel):
     completed: Optional[bool] = None
     priority: Optional[Priority] = None
     search_terms: Optional[str] = None
+    page: int = 1
 
 
 class TaskRead(TaskCreate):

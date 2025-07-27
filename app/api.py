@@ -1,9 +1,11 @@
 from sqlalchemy.future import select
-from sqlalchemy import delete, update
+from sqlalchemy import delete, update, func
 from app.models import Task
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
+
+PAGE_SIZE = 5
 
 async def create_task(db, task_data):
     task = Task(title=task_data.title, description=task_data.description, priority=task_data.priority, due_date=task_data.due_date, completed=task_data.completed)
@@ -30,7 +32,11 @@ async def get_tasks(db, task_filter):
             )
         )
 
-    result = await db.execute(query)
+    # Apply LIMIT/OFFSET based on fixed PAGE_SIZE
+    offset = (task_filter.page - 1) * PAGE_SIZE
+    paginated_query = query.limit(PAGE_SIZE).offset(offset)
+
+    result = await db.execute(paginated_query)
     return result.scalars().all()
 
 async def get_task_by_id(db, task_id):
@@ -55,9 +61,7 @@ async def update_task(db, task_id, task_data):
         await db.commit()
 
     # Return updated task
-    result = await db.execute(select(Task).where(Task.id == task_id))
-    updated_task = result.scalars().first()
-    return updated_task
+    return get_task_by_id(db, task_id)
 
 async def delete_task(db, task_id):
     try:
