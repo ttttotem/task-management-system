@@ -21,3 +21,6 @@ dev-dependencies = [
     "isort",
     "mypy"
 ]
+
+[tool.poetry.dependencies]
+uvicorn = "^0.22.0"
