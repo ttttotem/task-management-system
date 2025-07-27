@@ -1,20 +1,15 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.models import Task
 from app.database import engine, Base, get_db
 import app.api as api
-from app.models import Task
 from app.schemas import TaskCreate
 from fastapi import HTTPException
 import os
 app = FastAPI()
-
 @app.on_event("startup")
 async def startup():
-    # Delete DB file if exists
-    if os.path.exists("test.db"):
-        os.remove("test.db")
-        print("Deleted existing test.db for a clean start.")
-
+    print("start up")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 

@@ -1,10 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum as SQLEnum
-from sqlalchemy.orm import declarative_base
 from datetime import datetime
 from app.schemas import Priority
-
-Base = declarative_base()
-
+from app.database import Base
 
 class Task(Base):
     __tablename__ = "tasks"
