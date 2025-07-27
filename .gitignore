@@ -1,0 +1,56 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+
+# Virtual environment folders
+venv/
+env/
+.venv/
+.env/
+
+# VSCode settings (optional)
+.vscode/
+
+# Environment variable files
+.env
+.env.*
+
+# SQLite database files
+*.sqlite3
+*.db
+*.db-journal
+
+# Alembic migration logs
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+alembic/versions/*.py~
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# Pytest cache
+.pytest_cache/
+
+# MyPy cache
+.mypy_cache/
+
+# Ruff / Lint caches
+.ruff_cache/
+
+# PDM files
+__pypackages__/
+
+# Build and distribution folders
+build/
+di
