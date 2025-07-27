@@ -3,6 +3,7 @@ from sqlalchemy import delete, update
 from app.models import Task
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 
 async def create_task(db, task_data):
     task = Task(title=task_data.title, description=task_data.description, priority=task_data.priority, due_date=task_data.due_date, completed=task_data.completed)
@@ -11,8 +12,25 @@ async def create_task(db, task_data):
     await db.refresh(task)
     return task
 
-async def get_tasks(db):
-    result = await db.execute(select(Task))
+async def get_tasks(db, task_filter):
+    query = select(Task)
+
+    if task_filter.completed is not None:
+        query = query.where(Task.completed == task_filter.completed)
+
+    if task_filter.priority is not None:
+        query = query.where(Task.priority == task_filter.priority)
+
+    if task_filter.search_terms is not None:
+        search_term = f"%{task_filter.search_terms.lower()}%"
+        query = query.where(
+            or_(
+                Task.title.ilike(search_term),
+                Task.description.ilike(search_term)
+            )
+        )
+
+    result = await db.execute(query)
     return result.scalars().all()
 
 async def get_task_by_id(db, task_id):

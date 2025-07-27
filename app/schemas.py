@@ -22,6 +22,12 @@ class TaskUpdate(BaseModel):
     due_date: Optional[datetime] = None
     completed: Optional[bool] = None 
 
+class TaskFilter(BaseModel):
+    completed: Optional[bool] = None
+    priority: Optional[Priority] = None
+    search_terms: Optional[str] = None
+
+
 class TaskRead(TaskCreate):
     id: int
 
