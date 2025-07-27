@@ -3,10 +3,16 @@ import enum
 from datetime import datetime
 from typing import Optional
 
+
+class Errors(enum.Enum):
+    TASK_NOT_FOUND = "Task not found"
+
+
 class Priority(enum.IntEnum):
     HIGH = 1
     MEDIUM = 2
     LOW = 3
+
 
 class TaskCreate(BaseModel):
     title: str
@@ -15,12 +21,14 @@ class TaskCreate(BaseModel):
     due_date: datetime
     completed: Optional[bool] = False
 
+
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     priority: Optional[Priority] = None
     due_date: Optional[datetime] = None
-    completed: Optional[bool] = None 
+    completed: Optional[bool] = None
+
 
 class TaskFilter(BaseModel):
     completed: Optional[bool] = None

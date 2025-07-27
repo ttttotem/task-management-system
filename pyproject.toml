@@ -10,9 +10,14 @@ dependencies = [
     "aiosqlite",
     "pydantic",
     "httpx",
+    "aiosqlite"
+]
+
+[tool.uv]
+dev-dependencies = [
     "pytest",
-    "pre-commit",
     "black",
     "flake8",
-    "isort"
+    "isort",
+    "mypy"
 ]

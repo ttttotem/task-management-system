@@ -1,1 +1,20 @@
+## Installing dependencies
+```
+uv sync
+```
+
+## Run
+```
 uvicorn app.main:app --reload
+```
+Then open `http://127.0.0.1:8000/docs` for the auto-generated docs
+
+## Run with docker
+```
+docker compose up
+```
+
+## Run tests
+```
+pytest
+```
