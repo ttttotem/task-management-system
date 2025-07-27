@@ -2,7 +2,15 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import engine, Base, get_db
 import app.queries as queries
-from app.schemas import TaskCreate, TaskUpdate, TaskFilter, Priority, Errors, TaskRead
+from app.schemas import (
+    TaskCreate,
+    TaskUpdate,
+    TaskFilter,
+    Priority,
+    Errors,
+    TaskRead,
+    TaskDeletedMessage,
+)
 from fastapi import HTTPException
 from fastapi import Query
 from typing import Optional
@@ -25,8 +33,8 @@ async def create_task(task: TaskCreate, db: AsyncSession = Depends(get_db)) -> T
     **priority** - Values are (1 = High, 2 = Medium, 3 = Low)
     **completed** - If not provided will default to False
     """
-    task = await queries.create_task(task, db)
-    return task
+    created_task = await queries.create_task(task, db)
+    return created_task
 
 
 @app.get("/tasks/")
@@ -81,10 +89,8 @@ async def update_task(
 
     Returns the full resulting task object after the update is applied
     """
-    task = await queries.update_task(task_id, task, db)
-    if not task:
-        raise HTTPException(status_code=404, detail=Errors.TASK_NOT_FOUND.value)
-    return task
+    updated_task = await queries.update_task(task_id, task, db)
+    return updated_task
 
 
 @app.delete(
@@ -93,11 +99,11 @@ async def update_task(
         404: {"description": Errors.TASK_NOT_FOUND.value},
     },
 )
-async def delete_task(task_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_task(
+    task_id: int, db: AsyncSession = Depends(get_db)
+) -> TaskDeletedMessage:
     """
     Deletes a specific task
     """
-    task = await queries.delete_task(task_id, db)
-    if not task:
-        raise HTTPException(status_code=404, detail=Errors.TASK_NOT_FOUND.value)
-    return task
+    task_deleted_message = await queries.delete_task(task_id, db)
+    return task_deleted_message

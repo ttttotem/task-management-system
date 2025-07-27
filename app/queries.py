@@ -5,12 +5,12 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas import TaskCreate, TaskUpdate, TaskFilter
+from app.schemas import TaskCreate, TaskUpdate, TaskFilter, TaskRead, TaskDeletedMessage
 
 PAGE_SIZE = 20
 
 
-async def create_task(task_data: TaskCreate, db: AsyncSession):
+async def create_task(task_data: TaskCreate, db: AsyncSession) -> TaskRead:
     task = Task(
         title=task_data.title,
         description=task_data.description,
@@ -24,7 +24,7 @@ async def create_task(task_data: TaskCreate, db: AsyncSession):
     return task
 
 
-async def get_tasks(task_filter: TaskFilter, db: AsyncSession):
+async def get_tasks(task_filter: TaskFilter, db: AsyncSession) -> list[TaskRead]:
     query = select(Task)
 
     if task_filter.completed is not None:
@@ -44,15 +44,17 @@ async def get_tasks(task_filter: TaskFilter, db: AsyncSession):
     paginated_query = query.limit(PAGE_SIZE).offset(offset)
 
     result = await db.execute(paginated_query)
-    return result.scalars().all()
+    return result.scalars().all()  # type: ignore
 
 
-async def get_task_by_id(task_id: int, db: AsyncSession):
+async def get_task_by_id(task_id: int, db: AsyncSession) -> TaskRead:
     result = await db.execute(select(Task).where(Task.id == task_id))
-    return result.scalars().first()
+    return result.scalars().first()  # type: ignore
 
 
-async def update_task(task_id: int, task_data: TaskUpdate, db: AsyncSession):
+async def update_task(
+    task_id: int, task_data: TaskUpdate, db: AsyncSession
+) -> TaskRead:
     # Check if task exists
     result = await db.execute(select(Task).where(Task.id == task_id))
     task = result.scalars().first()
@@ -61,7 +63,7 @@ async def update_task(task_id: int, task_data: TaskUpdate, db: AsyncSession):
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
         )
 
-    # Update fields dynamically from task_data
+    # Update fields using task_data
     update_data = task_data.dict(exclude_unset=True)
     if update_data:
         await db.execute(update(Task).where(Task.id == task_id).values(**update_data))
@@ -71,7 +73,7 @@ async def update_task(task_id: int, task_data: TaskUpdate, db: AsyncSession):
     return await get_task_by_id(task_id, db)
 
 
-async def delete_task(task_id: int, db: AsyncSession):
+async def delete_task(task_id: int, db: AsyncSession) -> TaskDeletedMessage:
     try:
         # Check if the task exists
         result = await db.execute(select(Task).where(Task.id == task_id))
@@ -84,7 +86,7 @@ async def delete_task(task_id: int, db: AsyncSession):
         # Delete the task
         await db.execute(delete(Task).where(Task.id == task_id))
         await db.commit()
-        return {"message": "Task deleted successfully."}
+        return TaskDeletedMessage()
     except SQLAlchemyError:
         await db.rollback()
         raise HTTPException(

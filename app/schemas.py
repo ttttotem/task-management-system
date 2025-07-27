@@ -37,6 +37,10 @@ class TaskFilter(BaseModel):
     page: int = 1
 
 
+class TaskDeletedMessage(BaseModel):
+    message: str = "Task deleted successfully."
+
+
 class TaskRead(TaskCreate):
     id: int
 
