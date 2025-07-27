@@ -28,10 +28,10 @@ async def startup():
 @app.post("/tasks/")
 async def create_task(task: TaskCreate, db: AsyncSession = Depends(get_db)) -> TaskRead:
     """
-    Create a task
+    Create a task  
 
-    **priority** - Values are (1 = High, 2 = Medium, 3 = Low)
-    **completed** - If not provided will default to False
+    **priority** - Values are (1 = High, 2 = Medium, 3 = Low)  
+    **completed** - If not provided will default to False  
     """
     created_task = await queries.create_task(task, db)
     return created_task
@@ -46,11 +46,11 @@ async def read_tasks(
     db: AsyncSession = Depends(get_db),
 ) -> list[TaskRead]:
     """
-    Get tasks with optional filtering
+    Get tasks with optional filtering  
 
-    **page** - Used for pagination purposes, page-size is fixed
-    **priority** - Values are (1 = High, 2 = Medium, 3 = Low)
-    **search** - Finds only tasks with exact matches (case insensitive) in either task title or task description
+    **page** - Used for pagination purposes, page-size is fixed at 20 tasks per page  
+    **priority** - Values are (1 = High, 2 = Medium, 3 = Low)  
+    **search** - Finds only tasks with exact matches (case insensitive) in either task title or task description  
     """
     task_filter = TaskFilter(
         completed=completed, priority=priority, search_terms=search, page=page
@@ -85,7 +85,7 @@ async def update_task(
     task_id: int, task: TaskUpdate, db: AsyncSession = Depends(get_db)
 ) -> TaskRead:
     """
-    Update a task
+    Update a task  
 
     Returns the full resulting task object after the update is applied
     """
